@@ -1,3 +1,4 @@
+import { notFoundError } from "@/errors";
 import { AuthenticatedRequest } from "@/middlewares";
 import enrollmentRepository from "@/repositories/enrollment-repository";
 import ticketRepository from "@/repositories/ticket-repository";
@@ -39,15 +40,17 @@ export async function postUserTicket(req:AuthenticatedRequest, res: Response) {
     
   
   try{
-        const enrollment = enrollmentRepository.findWithAddressByUserId(userId);
+        const enrollment = await enrollmentRepository.findWithAddressByUserId(userId);
         if (!enrollment){
           return res.sendStatus(404);
         }
 
-        const ticket = ticketsService.checkCreateTicket(Number(ticketTypeId), userId);
+        const ticket = await ticketsService.checkCreateTicket(Number(ticketTypeId), userId);
 
-        
-        res.status(201).send(ticket)
+        if (!ticket){
+          throw notFoundError();
+        }
+        return res.status(201).send(ticket)
     } catch (error) {
         if (error.name === "UnauthorizedError") {
         return res.sendStatus(401);
