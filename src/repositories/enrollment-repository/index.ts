@@ -27,14 +27,13 @@ async function upsert(
 export type CreateEnrollmentParams = Omit<Enrollment, "id" | "createdAt" | "updatedAt">;
 export type UpdateEnrollmentParams = Omit<CreateEnrollmentParams, "userId">;
 
-async function getEnrollmentByUserId(userId:number) {
+async function getEnrollmentByUserId(userId: number) {
   return await prisma.enrollment.findUnique({
-      where:{
-          userId
-      }
-  })
+    where: {
+      userId
+    }
+  });
 }
-
 
 const enrollmentRepository = {
   findWithAddressByUserId,
