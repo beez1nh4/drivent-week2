@@ -1,4 +1,5 @@
 import { prisma } from "@/config";
+import { TicketInputType } from "@/schemas";
 import { TicketStatus } from "@prisma/client";
 
 
@@ -35,25 +36,72 @@ async function findUserTicket(id: number) {
     })
 }
 
-async function postTicketForUser(ticketTypeId:number, userId: number) {
-    const enrollment = await prisma.enrollment.findFirst({
-        where:{
-            userId
-        }
-    })
+async function postTicketForUser(ticketTypeId:number, enrollmentId: number) {
+    const TicketInput = {
+        ticketTypeId,
+        enrollmentId,
+        status: TicketStatus.RESERVED
+    }
+
     await prisma.ticket.create({
-        data:{
-            ticketTypeId,
-            enrollmentId: enrollment.id,
-            status: TicketStatus.RESERVED
+        data: TicketInput,
+        include:{
+            TicketType: true
         }
     })
 }
 
+async function findUserTicketByEnrollmentId(enrollmentId: number) {
+    
+    return prisma.ticket.findFirst({
+        where:{
+            enrollmentId
+        },
+        select:{
+            id: true,
+            status: true,
+            ticketTypeId: true,
+            enrollmentId: true,
+            TicketType:{
+                select:{
+                    id: true,
+                    name: true,
+                    price: true,
+                    isRemote: true,
+                    includesHotel: true,
+                    createdAt: true,
+                    updatedAt: true
+                },      
+            },
+            Enrollment: {
+                select:{
+                    userId: true
+                }
+            },
+            createdAt: true,
+            updatedAt: true
+        }
+    })
+}
+
+async function updateTicket(id: number) {
+    await prisma.ticket.update({
+        where:{
+            id
+        },
+        data:{
+            status: TicketStatus.PAID
+        }
+    })
+}
+
+
 const ticketRepository = {
     findTicketsTypes,
     findUserTicket,
-    postTicketForUser
+    postTicketForUser,
+    findUserTicketByEnrollmentId,
+    updateTicket
 };
 
 export default ticketRepository;
