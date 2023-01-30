@@ -50,7 +50,7 @@ export async function postUserTicket(req:AuthenticatedRequest, res: Response) {
         if (!ticket){
           throw notFoundError();
         }
-        return res.status(201).send(ticket)
+        return res.status(201).send(ticket);
     } catch (error) {
         if (error.name === "UnauthorizedError") {
         return res.sendStatus(401);

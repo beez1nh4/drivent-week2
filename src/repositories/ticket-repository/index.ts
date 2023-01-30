@@ -5,12 +5,12 @@ import { TicketStatus } from "@prisma/client";
 
 async function findTicketsTypes() {
 
-  return prisma.ticketType.findMany()
+  return await prisma.ticketType.findMany()
 }
 
 async function findUserTicket(enrollmentId: number) {
     
-    return prisma.ticket.findFirst({
+    return await prisma.ticket.findFirst({
         where:{
             enrollmentId
         },
@@ -69,7 +69,7 @@ async function postTicketForUser(ticketTypeId:number, enrollmentId: number) {
 
 async function findUserTicketByEnrollmentId(enrollmentId: number) {
     
-    return prisma.ticket.findFirst({
+    return await prisma.ticket.findFirst({
         where:{
             enrollmentId
         },
@@ -101,7 +101,7 @@ async function findUserTicketByEnrollmentId(enrollmentId: number) {
 }
 
 async function findTicketById(id:number) {
-    return prisma.ticket.findUnique({
+    return await prisma.ticket.findUnique({
         where:{
             id
         },
@@ -113,7 +113,7 @@ async function findTicketById(id:number) {
 }
 
 async function updateTicket(id: number) {
-    await prisma.ticket.update({
+    return await prisma.ticket.update({
         where:{
             id
         },

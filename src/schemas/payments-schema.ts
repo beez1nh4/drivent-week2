@@ -9,3 +9,13 @@ export type PaymentProcess = {
     cvv: number
 	}
 }
+
+export type PaymentInformation = {
+  id: number,
+  ticketId: number,
+  value: number,
+  cardIssuer: string, // VISA | MASTERCARD
+  cardLastDigits: string,
+  createdAt: Date,
+  updatedAt: Date,
+}

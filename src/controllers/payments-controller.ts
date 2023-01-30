@@ -1,19 +1,21 @@
+import { notFoundError } from "@/errors";
 import { AuthenticatedRequest } from "@/middlewares";
 import paymentsService from "@/services/payments-services";
 import { Request, Response } from "express";
 import httpStatus from "http-status";
 
 export async function getPaymentInfo(req: AuthenticatedRequest, res: Response) {
-  try {
     const userId = req.userId;
     const ticketId = Number(req.query.ticketId);
 
     if (!ticketId){
-      res.sendStatus(httpStatus.BAD_REQUEST);
+      return res.sendStatus(400);
     }
+  
+  try {
 
     const paymentInfo = await paymentsService.checkInfoPayment(ticketId, userId);
-    res.status(200).send(paymentInfo);
+    return res.status(200).send(paymentInfo);
     
   } catch (error) {
     if (error.name === "UnauthorizedError") {
@@ -27,17 +29,22 @@ export async function getPaymentInfo(req: AuthenticatedRequest, res: Response) {
 }
 
 export async function postPayment(req:AuthenticatedRequest, res: Response) {
-  const userId = req.userId;
+  const userId = Number(req.userId);
   const body = req.body;
 
-  if (!body || !body.ticketId || ! body.cardData){
+  if ( !body.ticketId || !body.cardData){
     res.sendStatus(400);
   }
   
   try {
 
     const paymentInfo = await paymentsService.paymentProcess(body, userId);
-    res.status(200).send(paymentInfo);
+    
+    if(!paymentInfo){
+      throw notFoundError();
+    }
+    
+    return res.status(200).send(paymentInfo);
     
   } catch (error) {
     if (error.name === "UnauthorizedError") {
