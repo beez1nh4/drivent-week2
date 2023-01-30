@@ -36,12 +36,25 @@ async function paymentProcess(body:PaymentProcess, userId: number) {
         throw unauthorizedError();
     }
 
-    const ticket = await ticketRepository.findUserTicket(body.ticketId);
+    const ticket = await ticketRepository.findTicketById(body.ticketId);
     if(!ticket){
         throw notFoundError();
     }
-    await ticketRepository.updateTicket(body.ticketId)
-    return await paymentRepository.findPaymentByTicketId(body.ticketId)
+    if(ticket.Enrollment.userId ! == userId){
+        throw unauthorizedError();
+    }
+
+    const paymentData = {
+        ticketId: body.ticketId,
+        value: ticket.TicketType.price,
+        cardIssuer: body.cardData.issuer,
+        cardLastDigits: body.cardData.number.toString().slice(-4)
+    }
+    await ticketRepository.updateTicket(body.ticketId);
+    const paymentDone = await paymentRepository.createPaymentProcess(paymentData);
+
+    
+    return paymentDone;
 }
 
 const paymentsService = {

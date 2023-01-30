@@ -13,7 +13,7 @@ export async function getPaymentInfo(req: AuthenticatedRequest, res: Response) {
     }
 
     const paymentInfo = await paymentsService.checkInfoPayment(ticketId, userId);
-    res.send(paymentInfo);
+    res.status(200).send(paymentInfo);
     
   } catch (error) {
     if (error.name === "UnauthorizedError") {
@@ -27,16 +27,17 @@ export async function getPaymentInfo(req: AuthenticatedRequest, res: Response) {
 }
 
 export async function postPayment(req:AuthenticatedRequest, res: Response) {
-  try {
-    const userId = req.userId;
-    const body = req.body;
+  const userId = req.userId;
+  const body = req.body;
 
-    if (!body || !body.ticketId || ! body.cardData){
-      res.sendStatus(400);
-    }
+  if (!body || !body.ticketId || ! body.cardData){
+    res.sendStatus(400);
+  }
+  
+  try {
 
     const paymentInfo = await paymentsService.paymentProcess(body, userId);
-    res.send(paymentInfo);
+    res.status(200).send(paymentInfo);
     
   } catch (error) {
     if (error.name === "UnauthorizedError") {

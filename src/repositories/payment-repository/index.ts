@@ -9,16 +9,10 @@ async function findPaymentByTicketId(ticketId: number) {
   })
 }
 
-async function createPaymentProcess(ticketId:number, value: number, cardIssuer: string, cardLastDigits: string) {
-  const Payment = {
-    ticketId,
-    value,
-    cardIssuer,
-    cardLastDigits
-  }
+async function createPaymentProcess(paymentData: {ticketId:number, value: number, cardIssuer: string, cardLastDigits: string}) {
 
   return await prisma.payment.create({
-    data: Payment
+    data: paymentData
   })
 }
 

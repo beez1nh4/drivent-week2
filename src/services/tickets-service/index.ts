@@ -9,12 +9,12 @@ async function checkFindTicket(id:number) {
         throw notFoundError();
     }
 
-    const ticket = await ticketRepository.findUserTicket(id);
+    const ticket = await ticketRepository.findUserTicket(enrollment.id);
 
     if(!ticket){
         throw notFoundError();
     }
-    
+    return ticket
 }
 
 async function checkCreateTicket(ticketTypeId:number, userId: number) {
@@ -23,9 +23,8 @@ async function checkCreateTicket(ticketTypeId:number, userId: number) {
     if(!enrollment){
         throw notFoundError();
     }
-    await ticketRepository.postTicketForUser(ticketTypeId, enrollment.id);
-        
-    return await findTicketBasedOnUserId(userId);
+
+    return await ticketRepository.postTicketForUser(ticketTypeId, enrollment.id);  
 
 }
 
